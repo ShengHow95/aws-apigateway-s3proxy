@@ -1,0 +1,67 @@
+openapi: "3.0.1"
+info:
+  title: "apigateway-s3-proxy"
+  version: "2021-01-25T02:53:07Z"
+paths:
+  /s3apigateway/{file}:
+    get:
+      parameters:
+      - name: "file"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        200:
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: ["APIGatewayS3Role", "Arn"]
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketName}/{object}
+        responses:
+          default:
+            statusCode: "200"
+        httpMethod: "GET"
+        requestParameters:
+          integration.request.path.object: "method.request.path.file"
+        passthroughBehavior: "when_no_match"
+        type: "aws"
+    put:
+      parameters:
+      - name: "file"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        200:
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+      x-amazon-apigateway-integration:
+        credentials:
+          Fn::GetAtt: ["APIGatewayS3Role", "Arn"]
+        uri: 
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:s3:path/${S3BucketName}/{object}
+        responses:
+          default:
+            statusCode: "200"
+        httpMethod: "PUT"
+        requestParameters:
+          integration.request.path.object: "method.request.path.file"
+        passthroughBehavior: "when_no_match"
+        type: "aws"
+components:
+  schemas:
+    Empty:
+      title: "Empty Schema"
+      type: "object"
+x-amazon-apigateway-binary-media-types:
+- "*/*"

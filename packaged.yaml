@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'API-Gateway REST API with S3 Proxy Integration
+
+  '
+Globals:
+  Api:
+    Cors:
+      AllowMethods: '''DELETE,GET,POST,PUT'''
+      AllowHeaders: '''Authorization,Content-Type'''
+      AllowOrigin: '''*'''
+Parameters:
+  S3BucketName:
+    Type: String
+    Default: jeff-s3-apigateway
+Resources:
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name:
+        Fn::Sub: ${AWS::StackName}-Api
+      TracingEnabled: true
+      StageName: dev
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location:
+              Fn::Sub: s3://${S3BucketName}/${AWS::StackName}/openapi-spec.yaml
+  APIGatewayS3Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - apigateway.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/AmazonS3FullAccess
+Outputs:
+  RestApiEndpoint:
+    Description: API Gateway Endpoint URL for S3 Proxy
+    Value:
+      Fn::Sub: https://${RestApi}.execute-api.${AWS::Region}.amazonaws.com/dev
+    Export:
+      Name: RestApiEndpoint
