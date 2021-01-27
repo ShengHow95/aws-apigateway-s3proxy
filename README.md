@@ -1,5 +1,5 @@
 # AWS API Gateway - S3 Proxy Integration
-This project demonstrate a simple way to use API Gateway as S3 Proxy to retrieve file content in S3 or upload file to S3 Bucket
+This project demonstrates a simple way to use API Gateway as S3 Proxy to retrieve file content in S3 or upload file to S3 Bucket
 
 ## Setup
 1. Create a Cloud9 Instance (can be t2.micro free tier)
